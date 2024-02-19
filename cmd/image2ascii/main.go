@@ -50,10 +50,10 @@ func main() {
 		log.Fatal(err)
 	}
 
-	config := image2ascii.DefaultConfig()
-	config.Color = !(*noColor)
+	converter := image2ascii.DefaultConverter()
+	converter.Color = !(*noColor)
 
-	ascii, err := image2ascii.NewConverter(config).Convert(img, *width, *height)
+	ascii, err := converter.Convert(img, *width, *height)
 	if err != nil {
 		log.Fatal(err)
 	}

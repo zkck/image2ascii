@@ -10,14 +10,14 @@ import (
 const ansiResetCode = "\u001b[0m"
 
 type Converter struct {
-	asciiMap string
-	color    bool
+	AsciiMap string
+	Color    bool
 }
 
-func NewConverter(config Config) Converter {
+func DefaultConverter() Converter {
 	return Converter{
-		asciiMap: config.AsciiMap,
-		color:    config.Color,
+		AsciiMap: " .:-=+*#%@",
+		Color:    true,
 	}
 }
 
@@ -39,8 +39,8 @@ func (c Converter) Convert(img image.Image, width, height uint) (string, error) 
 	for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
 		for x := bounds.Min.X; x < bounds.Max.X; x++ {
 			pixelDepth, _, _, _ := color.GrayModel.Convert(img.At(x, y)).RGBA()
-			asciiChar := c.asciiMap[len(c.asciiMap)*int(pixelDepth)/(0xffff+1)]
-			if c.color {
+			asciiChar := c.AsciiMap[len(c.AsciiMap)*int(pixelDepth)/(0xffff+1)]
+			if c.Color {
 				builder.WriteString(getAnsiColorCode(img.At(x, y)))
 				builder.WriteByte(asciiChar)
 				builder.WriteString(ansiResetCode)
