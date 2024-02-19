@@ -16,8 +16,13 @@ import (
 )
 
 func main() {
-	isUrl := flag.Bool("u", false, "path is URL")
-	path := flag.String("p", "", "path")
+	var (
+		isUrl   = flag.Bool("u", false, "path is URL")
+		path    = flag.String("p", "", "path")
+		width   = flag.Uint("w", 0, "width")
+		height  = flag.Uint("h", 32, "height")
+		noColor = flag.Bool("nc", false, "no color")
+	)
 	flag.Parse()
 
 	var reader io.Reader
@@ -45,7 +50,10 @@ func main() {
 		log.Fatal(err)
 	}
 
-	ascii, err := image2ascii.NewConverter(image2ascii.DefaultConfig()).Convert(img)
+	config := image2ascii.DefaultConfig()
+	config.Color = !(*noColor)
+
+	ascii, err := image2ascii.NewConverter(config).Convert(img, *width, *height)
 	if err != nil {
 		log.Fatal(err)
 	}

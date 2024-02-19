@@ -5,8 +5,6 @@ import (
 	"image"
 	"image/color"
 	"strings"
-
-	"golang.org/x/image/draw"
 )
 
 const ansiResetCode = "\u001b[0m"
@@ -17,16 +15,10 @@ type Converter struct {
 }
 
 func NewConverter(config Config) Converter {
-    return Converter{
-    	asciiMap: config.AsciiMap,
-    	color:    config.Color,
-    }
-}
-
-func resize(src image.Image) image.Image {
-	dst := image.NewRGBA(image.Rect(0, 0, 100, 50))
-	draw.BiLinear.Scale(dst, dst.Bounds(), src, src.Bounds(), draw.Over, nil)
-	return dst
+	return Converter{
+		asciiMap: config.AsciiMap,
+		color:    config.Color,
+	}
 }
 
 func getAnsiColorCode(c color.Color) string {
@@ -34,8 +26,12 @@ func getAnsiColorCode(c color.Color) string {
 	return fmt.Sprintf("\u001b[38;2;%d;%d;%dm", r&0xff, g&0xff, b&0xff)
 }
 
-func (c Converter) Convert(img image.Image) (string, error) {
-	img = resize(img)
+func (c Converter) Convert(img image.Image, width, height uint) (string, error) {
+	if newBounds, err := scaleBounds(img.Bounds(), width, height); err != nil {
+		return "", err
+	} else {
+		img = resize(img, newBounds)
+	}
 
 	var builder strings.Builder
 
