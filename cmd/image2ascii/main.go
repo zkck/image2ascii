@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 
+	_ "golang.org/x/image/webp"
 	_ "image/jpeg"
 	_ "image/png"
 
