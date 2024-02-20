@@ -21,8 +21,8 @@ func DefaultConverter() Converter {
 }
 
 func getColorDepth(c color.Color) int {
-	pixelDepth, _, _, _ := color.GrayModel.Convert(c).RGBA()
-	return int(pixelDepth)
+	depth, _, _, _ := color.GrayModel.Convert(c).RGBA()
+	return int(depth)
 }
 
 func (c Converter) Convert(img image.Image, width, height uint) (string, error) {
@@ -39,7 +39,7 @@ func (c Converter) Convert(img image.Image, width, height uint) (string, error) 
 		for x := bounds.Min.X; x < bounds.Max.X; x++ {
 			asciiChar := c.AsciiMap[len(c.AsciiMap)*getColorDepth(img.At(x, y))/(0xffff+1)]
 			if c.Color {
-				builder.WriteString(ansicodes.SetBackgroundColor(img.At(x, y)))
+				builder.WriteString(ansicodes.SetForegroundColor(img.At(x, y)))
 				builder.WriteByte(asciiChar)
 				builder.WriteString(ansicodes.Reset)
 			} else {
