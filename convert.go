@@ -1,13 +1,12 @@
 package image2ascii
 
 import (
-	"fmt"
 	"image"
 	"image/color"
 	"strings"
-)
 
-const ansiResetCode = "\u001b[0m"
+	"github.com/zkck/image2ascii/ansicodes"
+)
 
 type Converter struct {
 	AsciiMap string
@@ -21,9 +20,9 @@ func DefaultConverter() Converter {
 	}
 }
 
-func getAnsiColorCode(c color.Color) string {
-	r, g, b, _ := c.RGBA()
-	return fmt.Sprintf("\u001b[38;2;%d;%d;%dm", r&0xff, g&0xff, b&0xff)
+func getColorDepth(c color.Color) int {
+	pixelDepth, _, _, _ := color.GrayModel.Convert(c).RGBA()
+	return int(pixelDepth)
 }
 
 func (c Converter) Convert(img image.Image, width, height uint) (string, error) {
@@ -38,12 +37,11 @@ func (c Converter) Convert(img image.Image, width, height uint) (string, error) 
 	bounds := img.Bounds()
 	for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
 		for x := bounds.Min.X; x < bounds.Max.X; x++ {
-			pixelDepth, _, _, _ := color.GrayModel.Convert(img.At(x, y)).RGBA()
-			asciiChar := c.AsciiMap[len(c.AsciiMap)*int(pixelDepth)/(0xffff+1)]
+			asciiChar := c.AsciiMap[len(c.AsciiMap)*getColorDepth(img.At(x, y))/(0xffff+1)]
 			if c.Color {
-				builder.WriteString(getAnsiColorCode(img.At(x, y)))
+				builder.WriteString(ansicodes.SetBackgroundColor(img.At(x, y)))
 				builder.WriteByte(asciiChar)
-				builder.WriteString(ansiResetCode)
+				builder.WriteString(ansicodes.Reset)
 			} else {
 				builder.WriteByte(asciiChar)
 			}

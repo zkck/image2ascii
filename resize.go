@@ -22,7 +22,7 @@ func scaleBounds(bounds image.Rectangle, width, height uint) (image.Rectangle, e
 }
 
 func resize(src image.Image, dstBounds image.Rectangle) image.Image {
-	dst := image.NewRGBA(dstBounds)
+	dst := image.NewCMYK(dstBounds)
 	draw.BiLinear.Scale(dst, dst.Bounds(), src, src.Bounds(), draw.Over, nil)
 	return dst
 }
