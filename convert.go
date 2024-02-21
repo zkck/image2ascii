@@ -11,12 +11,14 @@ import (
 type Converter struct {
 	AsciiMap string
 	Color    bool
+	Bold     bool
 }
 
 func DefaultConverter() Converter {
 	return Converter{
 		AsciiMap: " .:-=+*#%@",
 		Color:    true,
+		Bold:     false,
 	}
 }
 
@@ -40,11 +42,12 @@ func (c Converter) Convert(img image.Image, width, height uint) (string, error) 
 			asciiChar := c.AsciiMap[len(c.AsciiMap)*getColorDepth(img.At(x, y))/(0xffff+1)]
 			if c.Color {
 				builder.WriteString(ansicodes.SetForegroundColor(img.At(x, y)))
-				builder.WriteByte(asciiChar)
-				builder.WriteString(ansicodes.Reset)
-			} else {
-				builder.WriteByte(asciiChar)
 			}
+			if c.Bold {
+				builder.WriteString(ansicodes.Bold)
+			}
+			builder.WriteByte(asciiChar)
+			builder.WriteString(ansicodes.Reset)
 		}
 		builder.WriteByte('\n')
 	}

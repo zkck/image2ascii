@@ -5,7 +5,10 @@ import (
 	"image/color"
 )
 
-const Reset = "\u001b[0m"
+const (
+	Reset = "\u001b[0m"
+	Bold  = "\u001b[1m"
+)
 
 func SetForegroundColor(c color.Color) string {
 	r, g, b, _ := c.RGBA()
