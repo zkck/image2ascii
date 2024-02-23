@@ -27,12 +27,8 @@ func getColorDepth(c color.Color) int {
 	return int(depth)
 }
 
-func (c Converter) Convert(img image.Image, width, height uint) (string, error) {
-	if newBounds, err := scaleBounds(img.Bounds(), width, height); err != nil {
-		return "", err
-	} else {
-		img = resize(img, newBounds)
-	}
+func (c Converter) Convert(img image.Image, width, height uint) string {
+	img = resize(img, scaleBounds(img.Bounds(), width, height))
 
 	var builder strings.Builder
 
@@ -52,5 +48,5 @@ func (c Converter) Convert(img image.Image, width, height uint) (string, error) 
 		builder.WriteByte('\n')
 	}
 
-	return builder.String(), nil
+	return builder.String()
 }

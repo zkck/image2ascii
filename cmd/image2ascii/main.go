@@ -16,18 +16,29 @@ import (
 	"github.com/zkck/image2ascii"
 )
 
+func sanitizeDimensions(width, height *uint) {
+	if *width == 0 && *height == 0 {
+		*height = 32
+	}
+}
+
 func main() {
 	var (
-		width  = flag.Uint("w", 0, "width of ascii image")
-		height = flag.Uint("h", 32, "height of ascii image")
-		isUrl  = flag.Bool("u", false, "path is URL")
-		color  = flag.Bool("c", false, "convert to color image")
-		bold   = flag.Bool("b", false, "bold")
+		width  = flag.Uint("w", 0, "width of the ascii output")
+		height = flag.Uint("h", 0, "height of the ascii output")
+		isUrl  = flag.Bool("u", false, "fetch image from URL (instead of file)")
+		color  = flag.Bool("c", false, "color the ascii output")
+		bold   = flag.Bool("b", false, "bold the ascii output")
 	)
 	flag.Parse()
 
+	sanitizeDimensions(width, height)
+
 	var reader io.Reader
-	pathOrUrl := flag.Args()[0]
+	pathOrUrl := flag.Arg(0)
+	if pathOrUrl == "" {
+		log.Fatal(fmt.Errorf("path is required"))
+	}
 
 	if *isUrl {
 		resp, err := http.Get(pathOrUrl)
@@ -56,10 +67,7 @@ func main() {
 	converter.Color = *color
 	converter.Bold = *bold
 
-	ascii, err := converter.Convert(img, *width, *height)
-	if err != nil {
-		log.Fatal(err)
-	}
+	ascii := converter.Convert(img, *width, *height)
 
 	fmt.Print(ascii)
 }
