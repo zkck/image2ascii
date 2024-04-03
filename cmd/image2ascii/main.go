@@ -18,7 +18,7 @@ import (
 
 func sanitizeDimensions(width, height *uint) {
 	if *width == 0 && *height == 0 {
-		*height = 28
+		*height = 32
 	}
 }
 
